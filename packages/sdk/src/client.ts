@@ -1,84 +1,92 @@
-import type {
-  GodaddyConfig,
-  Resource,
-  ListResourcesParams,
-  CreateResourceParams,
-  PaginatedResponse,
-} from "./types.js";
+import type { GoDaddyConfig } from "./types.js";
+import { GoDaddyConfigSchema, GoDaddyErrorResponseSchema } from "./types.js";
 import {
-  GodaddyConfigSchema,
-  ResourceSchema,
-  PaginatedResponseSchema,
-  ErrorResponseSchema,
-} from "./types.js";
-import { GodaddyError, GodaddyAuthError } from "./errors.js";
+  GoDaddyError,
+  GoDaddyAuthError,
+  GoDaddyNotFoundError,
+  GoDaddyValidationError,
+  GoDaddyRateLimitError,
+} from "./errors.js";
 
-export class GodaddyClient {
-  private readonly config: GodaddyConfig;
+type QueryValue = string | number | boolean | string[] | undefined;
 
-  constructor(config: Partial<GodaddyConfig> & { apiKey: string }) {
-    this.config = GodaddyConfigSchema.parse(config);
+interface RequestOptions {
+  body?: unknown;
+  query?: Record<string, QueryValue>;
+}
+
+export class GoDaddyClient {
+  private readonly config: GoDaddyConfig;
+
+  constructor(config: Partial<GoDaddyConfig> & { apiKey: string; apiSecret: string }) {
+    this.config = GoDaddyConfigSchema.parse(config);
   }
 
-  // -------------------------------------------------------------------------
-  // HTTP helpers
-  // -------------------------------------------------------------------------
+  private buildQuery(query?: Record<string, QueryValue>): string {
+    if (!query) return "";
+    const sp = new URLSearchParams();
+    for (const [k, v] of Object.entries(query)) {
+      if (v === undefined) continue;
+      sp.set(k, Array.isArray(v) ? v.join(",") : String(v));
+    }
+    const s = sp.toString();
+    return s ? `?${s}` : "";
+  }
 
-  private async request<T>(
-    method: string,
-    path: string,
-    body?: unknown
-  ): Promise<T> {
-    const url = `${this.config.baseUrl}${path}`;
+  private async request<T>(method: string, path: string, opts: RequestOptions = {}): Promise<T> {
+    const url = `${this.config.baseUrl}${path}${this.buildQuery(opts.query)}`;
+    const headers: Record<string, string> = {
+      Authorization: `sso-key ${this.config.apiKey}:${this.config.apiSecret}`,
+      Accept: "application/json",
+    };
+    if (opts.body !== undefined) headers["Content-Type"] = "application/json";
+    if (this.config.shopperId) headers["X-Shopper-Id"] = this.config.shopperId;
 
     const res = await fetch(url, {
       method,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.config.apiKey}`,
-      },
-      body: body ? JSON.stringify(body) : undefined,
+      headers,
+      body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
     });
 
-    if (!res.ok) {
-      if (res.status === 401) throw new GodaddyAuthError();
+    if (!res.ok) await this.throwForResponse(res);
 
-      const errorBody = await res.json().catch(() => null);
-      const parsed = ErrorResponseSchema.safeParse(errorBody);
+    if (res.status === 204) return undefined as T;
+    const text = await res.text();
+    if (!text) return undefined as T;
+    return JSON.parse(text) as T;
+  }
 
-      throw new GodaddyError(
-        parsed.success ? parsed.data.error.message : `HTTP ${res.status}`,
-        parsed.success ? parsed.data.error.code : "UNKNOWN",
-        res.status
+  private async throwForResponse(res: Response): Promise<never> {
+    const raw = await res.json().catch(() => null);
+    const parsed = GoDaddyErrorResponseSchema.safeParse(raw);
+    const message = parsed.success ? parsed.data.message : `HTTP ${res.status}`;
+    const code = parsed.success ? parsed.data.code : "UNKNOWN";
+    const fields = parsed.success ? parsed.data.fields : undefined;
+
+    if (res.status === 401 || res.status === 403) throw new GoDaddyAuthError(message);
+    if (res.status === 404) throw new GoDaddyNotFoundError(message);
+    if (res.status === 422) throw new GoDaddyValidationError(message, fields);
+    if (res.status === 429) {
+      const retryAfter = Number(res.headers.get("Retry-After")) || undefined;
+      throw new GoDaddyRateLimitError(message, retryAfter);
+    }
+    throw new GoDaddyError(message, code, res.status, fields);
+  }
+
+  /** Resolve the customerId for a v2 customer-scoped call: arg -> config -> throw. */
+  private requireCustomerId(customerId?: string): string {
+    const id = customerId ?? this.config.customerId;
+    if (!id) {
+      throw new GoDaddyValidationError(
+        "customerId is required for this v2 operation. Pass it as an argument or set GODADDY_CUSTOMER_ID."
       );
     }
-
-    return res.json() as Promise<T>;
+    return id;
   }
 
-  // -------------------------------------------------------------------------
-  // Resource operations -- add your own here
-  // -------------------------------------------------------------------------
-
-  async listResources(
-    params: ListResourcesParams = { page: 1, limit: 20 }
-  ): Promise<PaginatedResponse<Resource>> {
-    const query = new URLSearchParams({
-      page: String(params.page),
-      limit: String(params.limit),
-    });
-    return this.request("GET", `/resources?${query}`);
-  }
-
-  async getResource(id: string): Promise<Resource> {
-    return this.request("GET", `/resources/${id}`);
-  }
-
-  async createResource(params: CreateResourceParams): Promise<Resource> {
-    return this.request("POST", "/resources", params);
-  }
-
-  async deleteResource(id: string): Promise<void> {
-    await this.request("DELETE", `/resources/${id}`);
-  }
+  // === DOMAINS (Task 2, 3) ===
+  // === TRANSFERS (Task 4) ===
+  // === DNS RECORDS (Task 5) ===
+  // === CERTIFICATES (Task 6) ===
+  // === ORDERS (Task 7) ===
 }

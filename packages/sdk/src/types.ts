@@ -4,63 +4,30 @@ import { z } from "zod";
 // Configuration
 // ---------------------------------------------------------------------------
 
-export const GodaddyConfigSchema = z.object({
+export const GoDaddyConfigSchema = z.object({
   apiKey: z.string().min(1, "API key is required"),
+  apiSecret: z.string().min(1, "API secret is required"),
   baseUrl: z.string().url().default("https://api.godaddy.com"),
+  env: z.enum(["prod", "ote"]).default("prod"),
+  shopperId: z.string().optional(),
+  customerId: z.string().optional(),
 });
-
-export type GodaddyConfig = z.infer<typeof GodaddyConfigSchema>;
+export type GoDaddyConfig = z.infer<typeof GoDaddyConfigSchema>;
 
 // ---------------------------------------------------------------------------
-// API Resource schemas -- add your own here
+// Error envelope
 // ---------------------------------------------------------------------------
 
-export const ResourceSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
-});
+// GoDaddy error envelope: { code, message, fields?: [{ path, code, message, ... }] }
+export const GoDaddyErrorFieldSchema = z.object({
+  path: z.string().optional(),
+  code: z.string().optional(),
+  message: z.string().optional(),
+}).passthrough();
 
-export type Resource = z.infer<typeof ResourceSchema>;
-
-export const ListResourcesParamsSchema = z.object({
-  page: z.number().int().positive().default(1),
-  limit: z.number().int().positive().max(100).default(20),
-});
-
-export type ListResourcesParams = z.infer<typeof ListResourcesParamsSchema>;
-
-export const CreateResourceParamsSchema = z.object({
-  name: z.string().min(1),
-});
-
-export type CreateResourceParams = z.infer<typeof CreateResourceParamsSchema>;
-
-// ---------------------------------------------------------------------------
-// API Response wrappers
-// ---------------------------------------------------------------------------
-
-export const PaginatedResponseSchema = <T extends z.ZodTypeAny>(itemSchema: T) =>
-  z.object({
-    data: z.array(itemSchema),
-    total: z.number(),
-    page: z.number(),
-    limit: z.number(),
-  });
-
-export type PaginatedResponse<T> = {
-  data: T[];
-  total: number;
-  page: number;
-  limit: number;
-};
-
-export const ErrorResponseSchema = z.object({
-  error: z.object({
-    code: z.string(),
-    message: z.string(),
-  }),
-});
-
-export type ErrorResponse = z.infer<typeof ErrorResponseSchema>;
+export const GoDaddyErrorResponseSchema = z.object({
+  code: z.string(),
+  message: z.string(),
+  fields: z.array(GoDaddyErrorFieldSchema).optional(),
+}).passthrough();
+export type GoDaddyErrorResponse = z.infer<typeof GoDaddyErrorResponseSchema>;
