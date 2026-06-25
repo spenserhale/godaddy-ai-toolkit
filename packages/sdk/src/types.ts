@@ -132,3 +132,25 @@ export const DnsRecordSchema = z.object({
   weight: z.number().int().optional(),
 }).passthrough();
 export type DnsRecord = z.infer<typeof DnsRecordSchema>;
+
+// ---------------------------------------------------------------------------
+// Certificates
+// ---------------------------------------------------------------------------
+
+export const CertificateSchema = z.object({
+  certificateId: z.string().optional(),
+  status: z.string().optional(),
+  commonName: z.string().optional(),
+  period: z.number().optional(),
+  type: z.string().optional(),
+}).passthrough();
+export type Certificate = z.infer<typeof CertificateSchema>;
+
+export const CertificateCreateSchema = z.record(z.unknown()); // CSR + product details
+export type CertificateCreate = z.infer<typeof CertificateCreateSchema>;
+
+export const CertificateActionSchema = z.object({
+  createdAt: z.string().optional(),
+  type: z.string().optional(),
+}).passthrough();
+export type CertificateAction = z.infer<typeof CertificateActionSchema>;

@@ -112,3 +112,21 @@ describe("GoDaddyClient dns records", () => {
     expect(seen.url).toContain("/v1/domains/a.com/records/A/old");
   });
 });
+
+describe("GoDaddyClient certificates", () => {
+  it("creates a certificate via v1", async () => {
+    let seen = { url: "", method: "" };
+    stubFetch((url, init) => { seen = { url, method: init.method as string }; return { body: { certificateId: "c1" } }; });
+    await client().createCertificate({ commonName: "a.com" });
+    expect(seen.method).toBe("POST");
+    expect(seen.url).toContain("/v1/certificates");
+  });
+
+  it("lists certificates via v2 (no customerId)", async () => {
+    let seen = "";
+    stubFetch((url) => { seen = url; return { body: { certificates: [{ certificateId: "c1" }] } }; });
+    const r = await client().listCertificates();
+    expect(seen).toContain("/v2/certificates");
+    expect(r[0]!.certificateId).toBe("c1");
+  });
+});

@@ -4,6 +4,7 @@ import {
   DomainSuggestionSchema, TldSummarySchema, LegalAgreementSchema,
   DomainPurchaseResultSchema, TransferStatusSchema,
   DnsRecordSchema,
+  CertificateSchema, CertificateActionSchema,
 } from "./types.js";
 import type {
   GoDaddyConfig, DomainSummary, DomainDetail, DomainAvailable,
@@ -11,6 +12,7 @@ import type {
   DomainContact, DomainPurchase, DomainPurchaseResult,
   TransferStatus, TransferInBody,
   DnsRecord, DnsRecordType,
+  Certificate, CertificateCreate, CertificateAction,
 } from "./types.js";
 import {
   GoDaddyError,
@@ -262,5 +264,42 @@ export class GoDaddyClient {
   }
 
   // === CERTIFICATES (Task 6) ===
+
+  /** v1 POST /v1/certificates — billable */
+  async createCertificate(body: CertificateCreate): Promise<Certificate> {
+    const data = await this.request<unknown>("POST", "/v1/certificates", { body });
+    return CertificateSchema.parse(data ?? {});
+  }
+
+  /** v1 GET /v1/certificates/{certificateId} */
+  async getCertificate(certificateId: string): Promise<Certificate> {
+    const data = await this.request<unknown>("GET", `/v1/certificates/${encodeURIComponent(certificateId)}`);
+    return CertificateSchema.parse(data);
+  }
+
+  /** v2 GET /v2/certificates — caller-scoped list (only v2 offers a list) */
+  async listCertificates(params?: { limit?: number; offset?: number }): Promise<Certificate[]> {
+    const data = await this.request<{ certificates?: unknown[] }>("GET", "/v2/certificates", { query: {
+      limit: params?.limit, offset: params?.offset,
+    }});
+    return CertificateSchema.array().parse(data.certificates ?? []);
+  }
+
+  /** v1 GET /v1/certificates/{id}/actions */
+  async getCertificateActions(certificateId: string): Promise<CertificateAction[]> {
+    const data = await this.request<unknown[]>("GET", `/v1/certificates/${encodeURIComponent(certificateId)}/actions`);
+    return CertificateActionSchema.array().parse(data);
+  }
+
+  /** v1 GET /v1/certificates/{id}/download */
+  async downloadCertificate(certificateId: string): Promise<unknown> {
+    return this.request<unknown>("GET", `/v1/certificates/${encodeURIComponent(certificateId)}/download`);
+  }
+
+  /** v1 POST /v1/certificates/{id}/cancel */
+  async cancelCertificate(certificateId: string): Promise<void> {
+    await this.request<void>("POST", `/v1/certificates/${encodeURIComponent(certificateId)}/cancel`, { body: {} });
+  }
+
   // === ORDERS (Task 7) ===
 }
