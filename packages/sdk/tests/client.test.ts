@@ -37,3 +37,22 @@ describe("GoDaddyClient domains (read)", () => {
     expect(r.available).toBe(true);
   });
 });
+
+describe("GoDaddyClient domains (mutations)", () => {
+  it("renews a domain with POST body", async () => {
+    let seen = { url: "", method: "", body: "" };
+    stubFetch((url, init) => { seen = { url, method: init.method as string, body: init.body as string }; return { body: { orderId: 1 } }; });
+    await client().renewDomain("a.com", { period: 1 });
+    expect(seen.method).toBe("POST");
+    expect(seen.url).toContain("/v1/domains/a.com/renew");
+    expect(JSON.parse(seen.body).period).toBe(1);
+  });
+
+  it("cancels a domain with DELETE", async () => {
+    let seen = { url: "", method: "" };
+    stubFetch((url, init) => { seen = { url, method: init.method as string }; return { status: 204 }; });
+    await client().cancelDomain("a.com");
+    expect(seen.method).toBe("DELETE");
+    expect(seen.url).toContain("/v1/domains/a.com");
+  });
+});

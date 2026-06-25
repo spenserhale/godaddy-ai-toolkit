@@ -2,10 +2,12 @@ import {
   GoDaddyConfigSchema, GoDaddyErrorResponseSchema,
   DomainSummarySchema, DomainDetailSchema, DomainAvailableSchema,
   DomainSuggestionSchema, TldSummarySchema, LegalAgreementSchema,
+  DomainPurchaseResultSchema,
 } from "./types.js";
 import type {
   GoDaddyConfig, DomainSummary, DomainDetail, DomainAvailable,
   DomainSuggestion, TldSummary, LegalAgreement,
+  DomainContact, DomainPurchase, DomainPurchaseResult,
 } from "./types.js";
 import {
   GoDaddyError,
@@ -143,6 +145,28 @@ export class GoDaddyClient {
       tlds, privacy: opts?.privacy, forTransfer: opts?.forTransfer,
     }});
     return LegalAgreementSchema.array().parse(data);
+  }
+
+  /** v1 POST /v1/domains/purchase — billable */
+  async purchaseDomain(body: DomainPurchase): Promise<DomainPurchaseResult> {
+    const data = await this.request<unknown>("POST", "/v1/domains/purchase", { body });
+    return DomainPurchaseResultSchema.parse(data);
+  }
+
+  /** v1 PATCH /v1/domains/{domain}/contacts */
+  async updateDomainContacts(domain: string, contacts: Record<string, DomainContact>): Promise<void> {
+    await this.request<void>("PATCH", `/v1/domains/${encodeURIComponent(domain)}/contacts`, { body: contacts });
+  }
+
+  /** v1 POST /v1/domains/{domain}/renew — billable */
+  async renewDomain(domain: string, body?: { period?: number }): Promise<DomainPurchaseResult> {
+    const data = await this.request<unknown>("POST", `/v1/domains/${encodeURIComponent(domain)}/renew`, { body: body ?? {} });
+    return DomainPurchaseResultSchema.parse(data ?? {});
+  }
+
+  /** v1 DELETE /v1/domains/{domain} — cancels/deletes the domain */
+  async cancelDomain(domain: string): Promise<void> {
+    await this.request<void>("DELETE", `/v1/domains/${encodeURIComponent(domain)}`);
   }
 
   // === TRANSFERS (Task 4) ===

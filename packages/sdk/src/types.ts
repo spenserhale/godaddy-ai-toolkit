@@ -77,3 +77,28 @@ export const LegalAgreementSchema = z.object({
   content: z.string().optional(),
 }).passthrough();
 export type LegalAgreement = z.infer<typeof LegalAgreementSchema>;
+
+export const DomainContactSchema = z.object({
+  nameFirst: z.string(),
+  nameLast: z.string(),
+  email: z.string(),
+  phone: z.string(),
+  addressMailing: z.object({
+    address1: z.string(), city: z.string(), state: z.string().optional(),
+    postalCode: z.string(), country: z.string(),
+  }).passthrough(),
+  organization: z.string().optional(),
+}).passthrough();
+export type DomainContact = z.infer<typeof DomainContactSchema>;
+
+// Purchase/renew bodies are passed through to GoDaddy as-is (schema varies by TLD).
+export const DomainPurchaseSchema = z.record(z.unknown());
+export type DomainPurchase = z.infer<typeof DomainPurchaseSchema>;
+
+export const DomainPurchaseResultSchema = z.object({
+  orderId: z.number().optional(),
+  total: z.number().optional(),
+  currency: z.string().optional(),
+  itemCount: z.number().optional(),
+}).passthrough();
+export type DomainPurchaseResult = z.infer<typeof DomainPurchaseResultSchema>;
