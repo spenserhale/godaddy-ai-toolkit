@@ -102,3 +102,13 @@ export const DomainPurchaseResultSchema = z.object({
   itemCount: z.number().optional(),
 }).passthrough();
 export type DomainPurchaseResult = z.infer<typeof DomainPurchaseResultSchema>;
+
+export const TransferStatusSchema = z.object({
+  domain: z.string().optional(),
+  status: z.string().optional(),
+  registrar: z.string().optional(),
+}).passthrough();
+export type TransferStatus = z.infer<typeof TransferStatusSchema>;
+
+export const TransferInBodySchema = z.record(z.unknown()); // purchase + authCode + contacts; varies by TLD
+export type TransferInBody = z.infer<typeof TransferInBodySchema>;

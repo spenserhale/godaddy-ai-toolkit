@@ -56,3 +56,34 @@ describe("GoDaddyClient domains (mutations)", () => {
     expect(seen.url).toContain("/v1/domains/a.com");
   });
 });
+
+describe("GoDaddyClient transfers", () => {
+  it("initiates transfer-in via v1 (no customerId needed)", async () => {
+    let seen = { url: "", method: "" };
+    stubFetch((url, init) => { seen = { url, method: init.method as string }; return { body: { orderId: 9 } }; });
+    await client().transferInDomain("a.com", { authCode: "x" });
+    expect(seen.method).toBe("POST");
+    expect(seen.url).toContain("/v1/domains/a.com/transfer");
+  });
+
+  it("queries transfer status via v2 with customerId from config", async () => {
+    let seen = "";
+    stubFetch((url) => { seen = url; return { body: { status: "PENDING" } }; });
+    const c = new GoDaddyClient({ apiKey: "k", apiSecret: "s", baseUrl: "https://api.example.test", customerId: "cust-1" });
+    await c.getTransferStatus("a.com");
+    expect(seen).toContain("/v2/customers/cust-1/domains/a.com/transfer");
+  });
+
+  it("prefers an explicit customerId argument over config", async () => {
+    let seen = "";
+    stubFetch((url) => { seen = url; return { body: {} }; });
+    const c = new GoDaddyClient({ apiKey: "k", apiSecret: "s", baseUrl: "https://api.example.test", customerId: "cfg" });
+    await c.acceptTransferIn("a.com", "arg-cust");
+    expect(seen).toContain("/v2/customers/arg-cust/domains/a.com/transferInAccept");
+  });
+
+  it("throws GoDaddyValidationError when no customerId is available", async () => {
+    stubFetch(() => ({ body: {} }));
+    await expect(client().transferOutDomain("a.com")).rejects.toBeInstanceOf(GoDaddyValidationError);
+  });
+});

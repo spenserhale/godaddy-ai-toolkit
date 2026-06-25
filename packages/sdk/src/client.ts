@@ -2,12 +2,13 @@ import {
   GoDaddyConfigSchema, GoDaddyErrorResponseSchema,
   DomainSummarySchema, DomainDetailSchema, DomainAvailableSchema,
   DomainSuggestionSchema, TldSummarySchema, LegalAgreementSchema,
-  DomainPurchaseResultSchema,
+  DomainPurchaseResultSchema, TransferStatusSchema,
 } from "./types.js";
 import type {
   GoDaddyConfig, DomainSummary, DomainDetail, DomainAvailable,
   DomainSuggestion, TldSummary, LegalAgreement,
   DomainContact, DomainPurchase, DomainPurchaseResult,
+  TransferStatus, TransferInBody,
 } from "./types.js";
 import {
   GoDaddyError,
@@ -170,6 +171,59 @@ export class GoDaddyClient {
   }
 
   // === TRANSFERS (Task 4) ===
+
+  /** v1 POST /v1/domains/{domain}/transfer — purchase & start/restart a transfer-in (billable) */
+  async transferInDomain(domain: string, body: TransferInBody): Promise<DomainPurchaseResult> {
+    const data = await this.request<unknown>("POST", `/v1/domains/${encodeURIComponent(domain)}/transfer`, { body });
+    return DomainPurchaseResultSchema.parse(data ?? {});
+  }
+
+  private v2DomainPath(domain: string, suffix: string, customerId?: string): string {
+    const cust = this.requireCustomerId(customerId);
+    return `/v2/customers/${encodeURIComponent(cust)}/domains/${encodeURIComponent(domain)}${suffix}`;
+  }
+
+  /** v2 GET …/transfer */
+  async getTransferStatus(domain: string, customerId?: string): Promise<TransferStatus> {
+    const data = await this.request<unknown>("GET", this.v2DomainPath(domain, "/transfer", customerId));
+    return TransferStatusSchema.parse(data ?? {});
+  }
+
+  /** v2 POST …/transfer/validate */
+  async validateTransferIn(domain: string, body: TransferInBody, customerId?: string): Promise<void> {
+    await this.request<void>("POST", this.v2DomainPath(domain, "/transfer/validate", customerId), { body });
+  }
+
+  /** v2 POST …/transferInAccept */
+  async acceptTransferIn(domain: string, customerId?: string): Promise<void> {
+    await this.request<void>("POST", this.v2DomainPath(domain, "/transferInAccept", customerId), { body: {} });
+  }
+
+  /** v2 POST …/transferInCancel */
+  async cancelTransferIn(domain: string, customerId?: string): Promise<void> {
+    await this.request<void>("POST", this.v2DomainPath(domain, "/transferInCancel", customerId), { body: {} });
+  }
+
+  /** v2 POST …/transferInRetry — resubmit auth code */
+  async retryTransferIn(domain: string, body: { authCode: string }, customerId?: string): Promise<void> {
+    await this.request<void>("POST", this.v2DomainPath(domain, "/transferInRetry", customerId), { body });
+  }
+
+  /** v2 POST …/transferOut (billable / ownership change) */
+  async transferOutDomain(domain: string, customerId?: string): Promise<void> {
+    await this.request<void>("POST", this.v2DomainPath(domain, "/transferOut", customerId), { body: {} });
+  }
+
+  /** v2 POST …/transferOutAccept */
+  async acceptTransferOut(domain: string, customerId?: string): Promise<void> {
+    await this.request<void>("POST", this.v2DomainPath(domain, "/transferOutAccept", customerId), { body: {} });
+  }
+
+  /** v2 POST …/transferOutReject */
+  async rejectTransferOut(domain: string, customerId?: string): Promise<void> {
+    await this.request<void>("POST", this.v2DomainPath(domain, "/transferOutReject", customerId), { body: {} });
+  }
+
   // === DNS RECORDS (Task 5) ===
   // === CERTIFICATES (Task 6) ===
   // === ORDERS (Task 7) ===
