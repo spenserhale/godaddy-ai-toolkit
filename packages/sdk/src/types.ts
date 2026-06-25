@@ -31,3 +31,49 @@ export const GoDaddyErrorResponseSchema = z.object({
   fields: z.array(GoDaddyErrorFieldSchema).optional(),
 }).passthrough();
 export type GoDaddyErrorResponse = z.infer<typeof GoDaddyErrorResponseSchema>;
+
+// ---------------------------------------------------------------------------
+// Domains
+// ---------------------------------------------------------------------------
+
+export const DomainSummarySchema = z.object({
+  domainId: z.number().optional(),
+  domain: z.string(),
+  status: z.string().optional(),
+  expires: z.string().optional(),
+  createdAt: z.string().optional(),
+  renewable: z.boolean().optional(),
+  renewAuto: z.boolean().optional(),
+}).passthrough();
+export type DomainSummary = z.infer<typeof DomainSummarySchema>;
+
+export const DomainDetailSchema = DomainSummarySchema.extend({
+  nameServers: z.array(z.string()).optional(),
+  contactAdmin: z.unknown().optional(),
+  contactRegistrant: z.unknown().optional(),
+}).passthrough();
+export type DomainDetail = z.infer<typeof DomainDetailSchema>;
+
+export const DomainAvailableSchema = z.object({
+  domain: z.string(),
+  available: z.boolean(),
+  price: z.number().optional(),
+  currency: z.string().optional(),
+  period: z.number().optional(),
+  definitive: z.boolean().optional(),
+}).passthrough();
+export type DomainAvailable = z.infer<typeof DomainAvailableSchema>;
+
+export const DomainSuggestionSchema = z.object({ domain: z.string() }).passthrough();
+export type DomainSuggestion = z.infer<typeof DomainSuggestionSchema>;
+
+export const TldSummarySchema = z.object({ name: z.string(), type: z.string().optional() }).passthrough();
+export type TldSummary = z.infer<typeof TldSummarySchema>;
+
+export const LegalAgreementSchema = z.object({
+  agreementKey: z.string(),
+  title: z.string().optional(),
+  url: z.string().optional(),
+  content: z.string().optional(),
+}).passthrough();
+export type LegalAgreement = z.infer<typeof LegalAgreementSchema>;

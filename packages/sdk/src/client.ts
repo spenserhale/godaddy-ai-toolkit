@@ -1,5 +1,12 @@
-import type { GoDaddyConfig } from "./types.js";
-import { GoDaddyConfigSchema, GoDaddyErrorResponseSchema } from "./types.js";
+import {
+  GoDaddyConfigSchema, GoDaddyErrorResponseSchema,
+  DomainSummarySchema, DomainDetailSchema, DomainAvailableSchema,
+  DomainSuggestionSchema, TldSummarySchema, LegalAgreementSchema,
+} from "./types.js";
+import type {
+  GoDaddyConfig, DomainSummary, DomainDetail, DomainAvailable,
+  DomainSuggestion, TldSummary, LegalAgreement,
+} from "./types.js";
 import {
   GoDaddyError,
   GoDaddyAuthError,
@@ -85,6 +92,59 @@ export class GoDaddyClient {
   }
 
   // === DOMAINS (Task 2, 3) ===
+
+  /** v1 GET /v1/domains */
+  async listDomains(params?: { statuses?: string[]; limit?: number; marker?: string; includes?: string[] }): Promise<DomainSummary[]> {
+    const data = await this.request<unknown[]>("GET", "/v1/domains", { query: {
+      statuses: params?.statuses, limit: params?.limit, marker: params?.marker, includes: params?.includes,
+    }});
+    return DomainSummarySchema.array().parse(data);
+  }
+
+  /** v1 GET /v1/domains/{domain} */
+  async getDomain(domain: string): Promise<DomainDetail> {
+    const data = await this.request<unknown>("GET", `/v1/domains/${encodeURIComponent(domain)}`);
+    return DomainDetailSchema.parse(data);
+  }
+
+  /** v1 GET /v1/domains/available */
+  async checkAvailability(domain: string, opts?: { checkType?: "FAST" | "FULL"; forTransfer?: boolean }): Promise<DomainAvailable> {
+    const data = await this.request<unknown>("GET", "/v1/domains/available", { query: {
+      domain, checkType: opts?.checkType, forTransfer: opts?.forTransfer,
+    }});
+    return DomainAvailableSchema.parse(data);
+  }
+
+  /** v1 POST /v1/domains/available (bulk) */
+  async checkAvailabilityBulk(domains: string[], opts?: { checkType?: "FAST" | "FULL" }): Promise<{ domains: DomainAvailable[]; errors?: unknown[] }> {
+    const data = await this.request<{ domains: unknown[]; errors?: unknown[] }>("POST", "/v1/domains/available", {
+      body: domains, query: { checkType: opts?.checkType },
+    });
+    return { domains: DomainAvailableSchema.array().parse(data.domains ?? []), errors: data.errors };
+  }
+
+  /** v1 GET /v1/domains/suggest */
+  async suggestDomains(query: string, opts?: { tlds?: string[]; limit?: number }): Promise<DomainSuggestion[]> {
+    const data = await this.request<unknown[]>("GET", "/v1/domains/suggest", { query: {
+      query, tlds: opts?.tlds, limit: opts?.limit,
+    }});
+    return DomainSuggestionSchema.array().parse(data);
+  }
+
+  /** v1 GET /v1/domains/tlds */
+  async listTlds(): Promise<TldSummary[]> {
+    const data = await this.request<unknown[]>("GET", "/v1/domains/tlds");
+    return TldSummarySchema.array().parse(data);
+  }
+
+  /** v1 GET /v1/domains/agreements */
+  async getAgreements(tlds: string[], opts?: { privacy?: boolean; forTransfer?: boolean }): Promise<LegalAgreement[]> {
+    const data = await this.request<unknown[]>("GET", "/v1/domains/agreements", { query: {
+      tlds, privacy: opts?.privacy, forTransfer: opts?.forTransfer,
+    }});
+    return LegalAgreementSchema.array().parse(data);
+  }
+
   // === TRANSFERS (Task 4) ===
   // === DNS RECORDS (Task 5) ===
   // === CERTIFICATES (Task 6) ===
