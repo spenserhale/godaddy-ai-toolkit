@@ -1,15 +1,14 @@
 import { FastMCP } from "fastmcp";
-import { registerResourceTools } from "./tools/resources.js";
+import { registerDomainTools } from "./tools/domains.js";
+import { registerTransferTools } from "./tools/transfers.js";
+import { registerDnsTools } from "./tools/dns.js";
+import { registerCertificateTools } from "./tools/certificates.js";
+import { registerOrderTools } from "./tools/orders.js";
 
-const server = new FastMCP({
-  name: "godaddy-toolkit",
-  version: "0.1.0",
-});
-
-// Register tool groups
-registerResourceTools(server);
-
-// Start the server in stdio mode (for Claude Desktop, Cursor, etc.)
-server.start({
-  transportType: "stdio",
-});
+const server = new FastMCP({ name: "godaddy-toolkit", version: "0.1.0" });
+registerDomainTools(server);
+registerTransferTools(server);
+registerDnsTools(server);
+registerCertificateTools(server);
+registerOrderTools(server);
+server.start({ transportType: "stdio" });

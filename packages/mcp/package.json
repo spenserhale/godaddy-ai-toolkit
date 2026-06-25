@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@godaddy-toolkit/sdk": "workspace:*",
+    "@toon-format/toon": "^2.3.0",
     "fastmcp": "^3.0.0",
     "zod": "^3.24.0"
   },
