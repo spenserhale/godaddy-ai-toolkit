@@ -5,6 +5,7 @@ import {
   DomainPurchaseResultSchema, TransferStatusSchema,
   DnsRecordSchema,
   CertificateSchema, CertificateActionSchema,
+  OrderSchema,
 } from "./types.js";
 import type {
   GoDaddyConfig, DomainSummary, DomainDetail, DomainAvailable,
@@ -13,6 +14,7 @@ import type {
   TransferStatus, TransferInBody,
   DnsRecord, DnsRecordType,
   Certificate, CertificateCreate, CertificateAction,
+  Order,
 } from "./types.js";
 import {
   GoDaddyError,
@@ -302,4 +304,18 @@ export class GoDaddyClient {
   }
 
   // === ORDERS (Task 7) ===
+
+  /** v1 GET /v1/orders */
+  async listOrders(params?: { limit?: number; offset?: number; periodStart?: string; periodEnd?: string }): Promise<Order[]> {
+    const data = await this.request<{ orders?: unknown[] }>("GET", "/v1/orders", { query: {
+      limit: params?.limit, offset: params?.offset, periodStart: params?.periodStart, periodEnd: params?.periodEnd,
+    }});
+    return OrderSchema.array().parse(data.orders ?? []);
+  }
+
+  /** v1 GET /v1/orders/{orderId} */
+  async getOrder(orderId: string): Promise<Order> {
+    const data = await this.request<unknown>("GET", `/v1/orders/${encodeURIComponent(orderId)}`);
+    return OrderSchema.parse(data);
+  }
 }

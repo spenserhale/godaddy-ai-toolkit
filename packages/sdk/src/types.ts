@@ -154,3 +154,11 @@ export const CertificateActionSchema = z.object({
   type: z.string().optional(),
 }).passthrough();
 export type CertificateAction = z.infer<typeof CertificateActionSchema>;
+
+export const OrderSchema = z.object({
+  orderId: z.number().optional(),
+  createdAt: z.string().optional(),
+  currency: z.string().optional(),
+  total: z.number().optional(),
+}).passthrough();
+export type Order = z.infer<typeof OrderSchema>;

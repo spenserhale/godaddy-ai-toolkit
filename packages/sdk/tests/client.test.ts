@@ -130,3 +130,13 @@ describe("GoDaddyClient certificates", () => {
     expect(r[0]!.certificateId).toBe("c1");
   });
 });
+
+describe("GoDaddyClient orders", () => {
+  it("lists orders", async () => {
+    let seen = "";
+    stubFetch((url) => { seen = url; return { body: { orders: [{ orderId: 1 }] } }; });
+    const r = await client().listOrders();
+    expect(seen).toContain("/v1/orders");
+    expect(r[0]!.orderId).toBe(1);
+  });
+});
