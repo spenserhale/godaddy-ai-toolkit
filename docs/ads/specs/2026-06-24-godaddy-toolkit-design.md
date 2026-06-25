@@ -136,7 +136,7 @@ irreversible ones are marked **(!)** and are guarded in the CLI with
 - `getRecords(domain, type?, name?)` — `GET …/records[/{type}[/{name}]]`
 - `addRecords(domain, records[])` — `PATCH …/records` **(M)**
 - `replaceRecords(domain, records[])` — `PUT …/records` **(M)**
-- `replaceRecordsByType(domain, type, name?, records[])` — `PUT …/records/{type}[/{name}]` **(M)**
+- `replaceRecordsByType(domain, type, records[], name?)` — `PUT …/records/{type}[/{name}]` **(M)**
 - `deleteRecord(domain, type, name)` — `DELETE …/records/{type}/{name}` **(M)(!)**
 
 ### Certificates — **v1** `/v1/certificates`

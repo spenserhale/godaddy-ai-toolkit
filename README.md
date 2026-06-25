@@ -1,4 +1,4 @@
-# Godaddy Toolkit
+# GoDaddy Toolkit
 
 SDK, CLI, and MCP server for the [GoDaddy API](https://developer.godaddy.com/doc) —
 **domains**, **transfers**, **DNS**, **certificates**, and **orders** — in one Bun monorepo.

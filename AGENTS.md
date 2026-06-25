@@ -66,7 +66,7 @@ v2 transfer endpoints are customer-scoped: the path includes a customer UUID. Th
 
 **CLI:** All data-returning commands support `--toon` (default), `--json`, and `--csv` via the shared `formatOutput` utility in `packages/cli/src/output.ts`. TOON (`@toon-format/toon`) is the default — token-efficient for LLM consumers.
 
-**MCP:** Tools return TOON-formatted strings via `encode(result)` (`packages/mcp/src/tools/shared.ts`).
+**MCP:** Tools return TOON-formatted text via the `toonText()` helper, which wraps `encode(result)` in an MCP content block (`packages/mcp/src/tools/shared.ts`).
 
 ## CLI exit codes
 
