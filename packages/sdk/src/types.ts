@@ -112,3 +112,23 @@ export type TransferStatus = z.infer<typeof TransferStatusSchema>;
 
 export const TransferInBodySchema = z.record(z.unknown()); // purchase + authCode + contacts; varies by TLD
 export type TransferInBody = z.infer<typeof TransferInBodySchema>;
+
+// ---------------------------------------------------------------------------
+// DNS records
+// ---------------------------------------------------------------------------
+
+export const DnsRecordTypeSchema = z.enum(["A","AAAA","CNAME","MX","NS","SOA","SRV","TXT","CAA"]);
+export type DnsRecordType = z.infer<typeof DnsRecordTypeSchema>;
+
+export const DnsRecordSchema = z.object({
+  type: DnsRecordTypeSchema,
+  name: z.string(),
+  data: z.string(),
+  ttl: z.number().int().optional(),
+  priority: z.number().int().optional(),
+  service: z.string().optional(),
+  protocol: z.string().optional(),
+  port: z.number().int().optional(),
+  weight: z.number().int().optional(),
+}).passthrough();
+export type DnsRecord = z.infer<typeof DnsRecordSchema>;

@@ -87,3 +87,28 @@ describe("GoDaddyClient transfers", () => {
     await expect(client().transferOutDomain("a.com")).rejects.toBeInstanceOf(GoDaddyValidationError);
   });
 });
+
+describe("GoDaddyClient dns records", () => {
+  it("gets records filtered by type and name", async () => {
+    let seen = "";
+    stubFetch((url) => { seen = url; return { body: [{ type: "A", name: "@", data: "1.2.3.4" }] }; });
+    const r = await client().getRecords("a.com", "A", "@");
+    expect(seen).toContain("/v1/domains/a.com/records/A/%40");
+    expect(r[0]!.data).toBe("1.2.3.4");
+  });
+
+  it("adds records with PATCH", async () => {
+    let method = "";
+    stubFetch((_url, init) => { method = init.method as string; return { status: 200 }; });
+    await client().addRecords("a.com", [{ type: "TXT", name: "@", data: "hello" }]);
+    expect(method).toBe("PATCH");
+  });
+
+  it("deletes a record with DELETE", async () => {
+    let seen = { url: "", method: "" };
+    stubFetch((url, init) => { seen = { url, method: init.method as string }; return { status: 204 }; });
+    await client().deleteRecord("a.com", "A", "old");
+    expect(seen.method).toBe("DELETE");
+    expect(seen.url).toContain("/v1/domains/a.com/records/A/old");
+  });
+});

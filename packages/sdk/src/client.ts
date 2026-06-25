@@ -3,12 +3,14 @@ import {
   DomainSummarySchema, DomainDetailSchema, DomainAvailableSchema,
   DomainSuggestionSchema, TldSummarySchema, LegalAgreementSchema,
   DomainPurchaseResultSchema, TransferStatusSchema,
+  DnsRecordSchema,
 } from "./types.js";
 import type {
   GoDaddyConfig, DomainSummary, DomainDetail, DomainAvailable,
   DomainSuggestion, TldSummary, LegalAgreement,
   DomainContact, DomainPurchase, DomainPurchaseResult,
   TransferStatus, TransferInBody,
+  DnsRecord, DnsRecordType,
 } from "./types.js";
 import {
   GoDaddyError,
@@ -225,6 +227,40 @@ export class GoDaddyClient {
   }
 
   // === DNS RECORDS (Task 5) ===
+
+  private recordsPath(domain: string, type?: string, name?: string): string {
+    let p = `/v1/domains/${encodeURIComponent(domain)}/records`;
+    if (type) p += `/${encodeURIComponent(type)}`;
+    if (type && name) p += `/${encodeURIComponent(name)}`;
+    return p;
+  }
+
+  /** v1 GET …/records[/{type}[/{name}]] */
+  async getRecords(domain: string, type?: DnsRecordType, name?: string): Promise<DnsRecord[]> {
+    const data = await this.request<unknown[]>("GET", this.recordsPath(domain, type, name));
+    return DnsRecordSchema.array().parse(data);
+  }
+
+  /** v1 PATCH …/records — append records */
+  async addRecords(domain: string, records: DnsRecord[]): Promise<void> {
+    await this.request<void>("PATCH", this.recordsPath(domain), { body: records });
+  }
+
+  /** v1 PUT …/records — replace ALL records */
+  async replaceRecords(domain: string, records: DnsRecord[]): Promise<void> {
+    await this.request<void>("PUT", this.recordsPath(domain), { body: records });
+  }
+
+  /** v1 PUT …/records/{type}[/{name}] — replace records of a type (optionally a name) */
+  async replaceRecordsByType(domain: string, type: DnsRecordType, records: DnsRecord[], name?: string): Promise<void> {
+    await this.request<void>("PUT", this.recordsPath(domain, type, name), { body: records });
+  }
+
+  /** v1 DELETE …/records/{type}/{name} */
+  async deleteRecord(domain: string, type: DnsRecordType, name: string): Promise<void> {
+    await this.request<void>("DELETE", this.recordsPath(domain, type, name));
+  }
+
   // === CERTIFICATES (Task 6) ===
   // === ORDERS (Task 7) ===
 }
