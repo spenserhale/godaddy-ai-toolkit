@@ -15,6 +15,14 @@ The CLI exposes five command groups mirroring the API surface: `domains`,
 `transfers`, `dns`, `certificates`, and `orders`. See `AGENTS.md` for the v1/v2
 strategy, output-format convention, and exit codes.
 
+## Install the CLI
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/spenserhale/godaddy-ai-toolkit/main/scripts/install.sh | sh
+```
+
+The checksum-verified installer places `godaddy` in `$HOME/.local/bin`.
+
 ## Getting Started
 
 ```bash
@@ -35,9 +43,8 @@ bun run dev:cli -- --help
 bun run dev:mcp
 ```
 
-> Run from source via `bun run dev:cli` / `bun run dev:mcp`. Compiled/bundled
-> output (`bun build` / `--compile`) isn't supported yet — a known Stricli + bun
-> bundler issue breaks route resolution.
+Standalone binaries are published for macOS, Linux, and Windows. The CLI can
+also be run from source via `bun run dev:cli`.
 
 ## Architecture
 
