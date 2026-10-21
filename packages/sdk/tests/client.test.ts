@@ -36,6 +36,12 @@ describe("GoDaddyClient domains (read)", () => {
     expect(seenUrl).toContain("/v1/domains/available?domain=x.com");
     expect(r.available).toBe(true);
   });
+
+  it("accepts null nameServers on domain detail", async () => {
+    stubFetch(() => ({ body: { domain: "a.com", status: "ACTIVE", nameServers: null } }));
+    const d = await client().getDomain("a.com");
+    expect(d.nameServers).toBeNull();
+  });
 });
 
 describe("GoDaddyClient domains (mutations)", () => {

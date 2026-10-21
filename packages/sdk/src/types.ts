@@ -48,7 +48,8 @@ export const DomainSummarySchema = z.object({
 export type DomainSummary = z.infer<typeof DomainSummarySchema>;
 
 export const DomainDetailSchema = DomainSummarySchema.extend({
-  nameServers: z.array(z.string()).optional(),
+  // GoDaddy returns null (not an empty array) when no nameservers are set.
+  nameServers: z.array(z.string()).nullish(),
   contactAdmin: z.unknown().optional(),
   contactRegistrant: z.unknown().optional(),
 }).passthrough();
