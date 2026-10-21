@@ -17,18 +17,31 @@ strategy, output-format convention, and exit codes.
 
 ## Install the CLI
 
+**macOS and Linux:**
+
 ```sh
 curl -fsSL https://raw.githubusercontent.com/spenserhale/godaddy-ai-toolkit/main/scripts/install.sh | sh
 ```
 
-The checksum-verified installer places `godaddy` in `$HOME/.local/bin`.
+The script detects your OS + architecture, downloads the matching binary from
+the [latest release](https://github.com/spenserhale/godaddy-ai-toolkit/releases/latest),
+verifies its SHA256, and installs to `$HOME/.local/bin/godaddy`. Pin a specific
+version with `GODADDY_TOOLKIT_VERSION=v0.1.1` or change the install directory
+with `GODADDY_TOOLKIT_INSTALL=$HOME/bin`.
 
-Update a standalone install in place:
+**Windows:** grab `godaddy-windows-x64.exe` from the
+[latest release](https://github.com/spenserhale/godaddy-ai-toolkit/releases/latest)
+and put it on your `PATH`.
+
+**Updating:** re-run the install command above, or use the built-in:
 
 ```sh
 godaddy upgrade          # install latest
 godaddy upgrade --check  # check without installing
 ```
+
+`godaddy upgrade` ships in v0.1.1 and later. On v0.1.0, re-run the install
+command once to get it.
 
 ## Getting Started
 

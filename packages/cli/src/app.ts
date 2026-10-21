@@ -64,4 +64,4 @@ const routes = buildRouteMap({
   docs: { brief: "GoDaddy CLI — agent-native commands for domains, DNS, certificates, and orders" },
 });
 
-export const app = buildApplication(routes, { name: "godaddy", versionInfo: { currentVersion: "0.1.0" } });
+export const app = buildApplication(routes, { name: "godaddy", versionInfo: { currentVersion: "0.1.1" } });
