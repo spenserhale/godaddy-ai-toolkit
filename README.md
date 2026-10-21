@@ -23,6 +23,13 @@ curl -fsSL https://raw.githubusercontent.com/spenserhale/godaddy-ai-toolkit/main
 
 The checksum-verified installer places `godaddy` in `$HOME/.local/bin`.
 
+Update a standalone install in place:
+
+```sh
+godaddy upgrade          # install latest
+godaddy upgrade --check  # check without installing
+```
+
 ## Getting Started
 
 ```bash

@@ -32,6 +32,7 @@ import { cancelCertificateCommand } from "./commands/certificates/cancel.js";
 import { listOrdersCommand } from "./commands/orders/list.js";
 import { getOrderCommand } from "./commands/orders/get.js";
 import { agentContextCommand } from "./commands/agent-context.js";
+import { upgradeCommand } from "./commands/upgrade.js";
 
 const routes = buildRouteMap({
   routes: {
@@ -58,6 +59,7 @@ const routes = buildRouteMap({
       list: listOrdersCommand, get: getOrderCommand,
     }}),
     "agent-context": agentContextCommand,
+    upgrade: upgradeCommand,
   },
   docs: { brief: "GoDaddy CLI — agent-native commands for domains, DNS, certificates, and orders" },
 });

@@ -13,6 +13,8 @@ const CATALOG = {
     certificates: ["create","get","list","actions","download","cancel"],
     orders: ["list","get"],
   },
+  topLevel: ["agent-context", "upgrade"],
+  notes: ["`godaddy upgrade` self-updates the standalone binary install (see scripts/install.sh); it errors when running from source via `bun run`."],
 } as const;
 
 export const agentContextCommand = buildCommand({
