@@ -20,7 +20,7 @@ export const transferInCommand = buildCommand({
     if (flags["dry-run"]) { console.log(`[dry-run] would start transfer-in for ${domain}`); return; }
     if (!flags.yes) { console.error("Refusing to start transfer-in without --yes. Re-run with --yes to confirm."); process.exit(2); }
     try {
-      const client = new GoDaddyClient(resolveConfigOrExit());
+      const client = new GoDaddyClient(await resolveConfigOrExit());
       console.log(JSON.stringify(await client.transferInDomain(domain, body), null, 2));
     } catch (err) { handleError(err); }
   },

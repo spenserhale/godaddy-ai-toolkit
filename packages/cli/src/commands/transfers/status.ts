@@ -19,7 +19,7 @@ export const transferStatusCommand = buildCommand({
   },
   async func(this: void, flags: TransferStatusFlags, domain: string) {
     try {
-      const client = new GoDaddyClient(resolveConfigOrExit());
+      const client = new GoDaddyClient(await resolveConfigOrExit());
       console.log(formatOutput(await client.getTransferStatus(domain, flags["customer-id"]), flags));
     } catch (err) { handleError(err); }
   },

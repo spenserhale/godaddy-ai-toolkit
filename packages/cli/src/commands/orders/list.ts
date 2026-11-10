@@ -18,7 +18,7 @@ export const listOrdersCommand = buildCommand({
   },
   async func(this: void, flags: ListOrdersFlags) {
     try {
-      const client = new GoDaddyClient(resolveConfigOrExit());
+      const client = new GoDaddyClient(await resolveConfigOrExit());
       console.log(formatOutput(await client.listOrders({ limit: flags.limit }), flags));
     } catch (err) { handleError(err); }
   },

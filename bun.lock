@@ -11,7 +11,7 @@
     },
     "packages/cli": {
       "name": "@godaddy-toolkit/cli",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "bin": {
         "godaddy": "src/bin.ts",
       },
@@ -27,7 +27,7 @@
     },
     "packages/mcp": {
       "name": "@godaddy-toolkit/mcp",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "dependencies": {
         "@godaddy-toolkit/sdk": "workspace:*",
         "@toon-format/toon": "^2.3.0",
@@ -41,7 +41,7 @@
     },
     "packages/sdk": {
       "name": "@godaddy-toolkit/sdk",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "dependencies": {
         "zod": "^3.24.0",
       },

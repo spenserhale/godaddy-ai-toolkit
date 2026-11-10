@@ -25,6 +25,18 @@ bun run --filter '@godaddy-toolkit/sdk' build
 
 Config: copy `.env.example` → `.env` and set `GODADDY_API_KEY` and `GODADDY_API_SECRET` (create at https://developer.godaddy.com/keys). Auth uses the `sso-key <key>:<secret>` Authorization header. See `.env.example` for all options.
 
+Recommended persistent setup: `bun --no-env-file run packages/cli/src/bin.ts auth set godaddy`
+stores both credentials in the OS keychain through Bun.secrets (Bun 1.3+).
+CLI and MCP use async `loadConfig()` per call; synchronous `resolveConfig()`
+remains available for SDK callers. Precedence: explicit SDK overrides > process
+env > nearest `.env` > keychain > user JSON config > defaults. Credential keys:
+`GODADDY_API_KEY`, `GODADDY_API_SECRET`. Additional configuration env:
+`GODADDY_KEYCHAIN=0` disables automatic lookup;
+`GODADDY_CONFIG_FILE` overrides the user JSON path, and `XDG_CONFIG_HOME`
+overrides its root. Automated tests inject SecretStore or set
+`GODADDY_KEYCHAIN=0`; never touch the real keychain. MCP has no credential write tools.
+See [configuration](docs/guides/configuration.md) and [security](docs/guides/security.md).
+
 > **Run from source via bun.** Use `bun run dev:cli` and `bun run dev:mcp`. Compiled/bundled output is **not** supported yet — `bun build` / `--compile` hit a known Stricli + bun bundler issue (`getRoutingTargetForInput`) that breaks route resolution.
 
 ## Repo layout

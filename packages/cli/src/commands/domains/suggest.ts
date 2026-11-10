@@ -19,7 +19,7 @@ export const suggestDomainsCommand = buildCommand({
   },
   async func(this: void, flags: SuggestDomainsFlags, query: string) {
     try {
-      const client = new GoDaddyClient(resolveConfigOrExit());
+      const client = new GoDaddyClient(await resolveConfigOrExit());
       const result = await client.suggestDomains(query, { limit: flags.limit });
       console.log(formatOutput(result, flags));
     } catch (err) { handleError(err); }

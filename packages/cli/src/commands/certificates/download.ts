@@ -12,7 +12,7 @@ export const downloadCertificateCommand = buildCommand({
   },
   async func(this: void, flags: OutputFlags, certificateId: string) {
     try {
-      const client = new GoDaddyClient(resolveConfigOrExit());
+      const client = new GoDaddyClient(await resolveConfigOrExit());
       console.log(formatOutput(await client.downloadCertificate(certificateId), flags));
     } catch (err) { handleError(err); }
   },

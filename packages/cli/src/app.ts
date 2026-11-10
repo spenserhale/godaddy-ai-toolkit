@@ -34,8 +34,18 @@ import { getOrderCommand } from "./commands/orders/get.js";
 import { agentContextCommand } from "./commands/agent-context.js";
 import { upgradeCommand } from "./commands/upgrade.js";
 
+import { authSetCommand } from "./commands/auth/set.js";
+import { authListCommand } from "./commands/auth/list.js";
+import { authDeleteCommand } from "./commands/auth/delete.js";
+import { authMigrateCommand } from "./commands/auth/migrate.js";
+import { configShowCommand } from "./commands/config/show.js";
+
 const routes = buildRouteMap({
   routes: {
+    auth: buildRouteMap({ docs: { brief: "Manage OS keychain credentials" }, routes: {
+      set: authSetCommand, list: authListCommand, delete: authDeleteCommand, migrate: authMigrateCommand,
+    }}),
+    config: buildRouteMap({ docs: { brief: "Inspect configuration" }, routes: { show: configShowCommand } }),
     domains: buildRouteMap({ docs: { brief: "Manage domains" }, routes: {
       list: listDomainsCommand, get: getDomainCommand, available: availableDomainCommand,
       suggest: suggestDomainsCommand, tlds: listTldsCommand, agreements: getAgreementsCommand,
@@ -64,4 +74,4 @@ const routes = buildRouteMap({
   docs: { brief: "GoDaddy CLI — agent-native commands for domains, DNS, certificates, and orders" },
 });
 
-export const app = buildApplication(routes, { name: "godaddy", versionInfo: { currentVersion: "0.1.1" } });
+export const app = buildApplication(routes, { name: "godaddy", versionInfo: { currentVersion: "0.2.0" } });

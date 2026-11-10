@@ -26,7 +26,7 @@ curl -fsSL https://raw.githubusercontent.com/spenserhale/godaddy-ai-toolkit/main
 The script detects your OS + architecture, downloads the matching binary from
 the [latest release](https://github.com/spenserhale/godaddy-ai-toolkit/releases/latest),
 verifies its SHA256, and installs to `$HOME/.local/bin/godaddy`. Pin a specific
-version with `GODADDY_TOOLKIT_VERSION=v0.1.1` or change the install directory
+version with `GODADDY_TOOLKIT_VERSION=v0.2.0` or change the install directory
 with `GODADDY_TOOLKIT_INSTALL=$HOME/bin`.
 
 **Windows:** grab `godaddy-windows-x64.exe` from the
@@ -49,9 +49,9 @@ command once to get it.
 # Install dependencies
 bun install
 
-# Configure credentials: copy .env.example -> .env and set
-# GODADDY_API_KEY and GODADDY_API_SECRET (create at developer.godaddy.com/keys)
-cp .env.example .env
+# Store credentials once in the OS keychain (Bun 1.3+; hidden prompts)
+# Create an API key and secret at developer.godaddy.com/keys
+bun --no-env-file run packages/cli/src/bin.ts auth set godaddy
 
 # Build all packages
 bun run build
@@ -65,6 +65,18 @@ bun run dev:mcp
 
 Standalone binaries are published for macOS, Linux, and Windows. The CLI can
 also be run from source via `bun run dev:cli`.
+
+Use source execution for supported routing; compiled/bundled Stricli routing has
+a known issue. Keychain entries reach both CLI and MCP without a `.env` or an MCP
+`env` block. `auth list` and `config show --json` show sources without values.
+Use `auth migrate --dry-run`, then `auth migrate`, to copy existing plaintext
+credentials; remove copied entries from the reported files yourself.
+
+Credentials resolve from process env, nearest `.env`, OS keychain, then user
+config. Explicit SDK overrides win. Set `GODADDY_KEYCHAIN=0` on headless machines.
+See [configuration](docs/guides/configuration.md) for stdin examples, command
+reference, platform caveats, and recommended MCP setup without an env block;
+see [security](docs/guides/security.md) for credential handling.
 
 ## Architecture
 

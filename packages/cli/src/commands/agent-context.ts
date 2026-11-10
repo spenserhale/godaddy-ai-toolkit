@@ -2,11 +2,13 @@ import { buildCommand } from "@stricli/core";
 
 const CATALOG = {
   name: "godaddy",
-  version: "0.1.1",
+  version: "0.2.0",
   description: "Agent-native CLI for the GoDaddy API",
-  env: ["GODADDY_API_KEY", "GODADDY_API_SECRET", "GODADDY_ENV(prod|ote)", "GODADDY_BASE_URL?", "GODADDY_SHOPPER_ID?", "GODADDY_CUSTOMER_ID?"],
+  env: ["GODADDY_API_KEY", "GODADDY_API_SECRET", "GODADDY_ENV(prod|ote)", "GODADDY_BASE_URL?", "GODADDY_SHOPPER_ID?", "GODADDY_CUSTOMER_ID?", "GODADDY_KEYCHAIN?", "GODADDY_CONFIG_FILE?"],
   exitCodes: { network: 1, validation: 2, config: 3, notFound: 4, auth: 5, rateLimit: 6, dryRun: 0 },
   groups: {
+    auth: ["set", "list", "delete", "migrate"],
+    config: ["show"],
     domains: ["list","get","available","suggest","tlds","agreements","purchase","renew","update-contacts","cancel"],
     transfers: ["in","status","validate","accept-in","cancel-in","retry-in","out","accept-out","reject-out"],
     dns: ["get","add","replace","replace-type","delete"],
@@ -14,7 +16,7 @@ const CATALOG = {
     orders: ["list","get"],
   },
   topLevel: ["agent-context", "upgrade"],
-  notes: ["`godaddy upgrade` self-updates the standalone binary install (see scripts/install.sh); it errors when running from source via `bun run`."],
+  notes: ["Credentials: process env > nearest .env > OS keychain > user config. Store with godaddy auth set godaddy; set GODADDY_KEYCHAIN=0 to disable lookup.", "`godaddy upgrade` self-updates the standalone binary install (see scripts/install.sh); it errors when running from source via `bun run`."],
 } as const;
 
 export const agentContextCommand = buildCommand({

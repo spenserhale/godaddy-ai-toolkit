@@ -12,7 +12,7 @@ export function registerTransferTools(server: FastMCP): void {
       body: z.record(z.unknown()).describe("Transfer-in payload (authCode, contacts, etc.)"),
     }),
     annotations: { readOnlyHint: false, destructiveHint: true },
-    execute: async (args) => toonText(await makeClient().transferInDomain(args.domain, args.body as TransferInBody)),
+    execute: async (args) => toonText(await (await makeClient()).transferInDomain(args.domain, args.body as TransferInBody)),
   });
 
   server.addTool({
@@ -20,7 +20,7 @@ export function registerTransferTools(server: FastMCP): void {
     description: "Get the transfer status for a domain (v2).",
     parameters: z.object({ domain: z.string(), customerId: z.string().optional() }),
     annotations: { readOnlyHint: true },
-    execute: async (args) => toonText(await makeClient().getTransferStatus(args.domain, args.customerId)),
+    execute: async (args) => toonText(await (await makeClient()).getTransferStatus(args.domain, args.customerId)),
   });
 
   server.addTool({
@@ -33,7 +33,7 @@ export function registerTransferTools(server: FastMCP): void {
     }),
     annotations: { readOnlyHint: false },
     execute: async (args) => {
-      await makeClient().validateTransferIn(args.domain, args.body as TransferInBody, args.customerId);
+      await (await makeClient()).validateTransferIn(args.domain, args.body as TransferInBody, args.customerId);
       return toonText({ validated: args.domain });
     },
   });
@@ -44,7 +44,7 @@ export function registerTransferTools(server: FastMCP): void {
     parameters: z.object({ domain: z.string(), customerId: z.string().optional() }),
     annotations: { readOnlyHint: false },
     execute: async (args) => {
-      await makeClient().acceptTransferIn(args.domain, args.customerId);
+      await (await makeClient()).acceptTransferIn(args.domain, args.customerId);
       return toonText({ accepted: args.domain });
     },
   });
@@ -55,7 +55,7 @@ export function registerTransferTools(server: FastMCP): void {
     parameters: z.object({ domain: z.string(), customerId: z.string().optional() }),
     annotations: { readOnlyHint: false },
     execute: async (args) => {
-      await makeClient().cancelTransferIn(args.domain, args.customerId);
+      await (await makeClient()).cancelTransferIn(args.domain, args.customerId);
       return toonText({ canceled: args.domain });
     },
   });
@@ -70,7 +70,7 @@ export function registerTransferTools(server: FastMCP): void {
     }),
     annotations: { readOnlyHint: false },
     execute: async (args) => {
-      await makeClient().retryTransferIn(args.domain, { authCode: args.authCode }, args.customerId);
+      await (await makeClient()).retryTransferIn(args.domain, { authCode: args.authCode }, args.customerId);
       return toonText({ retried: args.domain });
     },
   });
@@ -81,7 +81,7 @@ export function registerTransferTools(server: FastMCP): void {
     parameters: z.object({ domain: z.string(), customerId: z.string().optional() }),
     annotations: { readOnlyHint: false, destructiveHint: true },
     execute: async (args) => {
-      await makeClient().transferOutDomain(args.domain, args.customerId);
+      await (await makeClient()).transferOutDomain(args.domain, args.customerId);
       return toonText({ transferOut: args.domain });
     },
   });
@@ -92,7 +92,7 @@ export function registerTransferTools(server: FastMCP): void {
     parameters: z.object({ domain: z.string(), customerId: z.string().optional() }),
     annotations: { readOnlyHint: false },
     execute: async (args) => {
-      await makeClient().acceptTransferOut(args.domain, args.customerId);
+      await (await makeClient()).acceptTransferOut(args.domain, args.customerId);
       return toonText({ accepted: args.domain });
     },
   });
@@ -103,7 +103,7 @@ export function registerTransferTools(server: FastMCP): void {
     parameters: z.object({ domain: z.string(), customerId: z.string().optional() }),
     annotations: { readOnlyHint: false },
     execute: async (args) => {
-      await makeClient().rejectTransferOut(args.domain, args.customerId);
+      await (await makeClient()).rejectTransferOut(args.domain, args.customerId);
       return toonText({ rejected: args.domain });
     },
   });

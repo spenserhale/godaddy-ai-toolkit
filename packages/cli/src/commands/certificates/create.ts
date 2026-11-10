@@ -17,7 +17,7 @@ export const createCertificateCommand = buildCommand({
     const body = JSON.parse(flags.body) as CertificateCreate;
     if (flags["dry-run"]) { console.log(`[dry-run] would create a certificate`); return; }
     try {
-      const client = new GoDaddyClient(resolveConfigOrExit());
+      const client = new GoDaddyClient(await resolveConfigOrExit());
       console.log(JSON.stringify(await client.createCertificate(body), null, 2));
     } catch (err) { handleError(err); }
   },

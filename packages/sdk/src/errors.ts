@@ -10,6 +10,13 @@ export class GoDaddyError extends Error {
   }
 }
 
+export class GoDaddyConfigError extends GoDaddyError {
+  constructor(message: string, public readonly hint?: string) {
+    super(message, "CONFIG_ERROR");
+    this.name = "GoDaddyConfigError";
+  }
+}
+
 export class GoDaddyAuthError extends GoDaddyError {
   constructor(message = "Authentication failed. Check GODADDY_API_KEY and GODADDY_API_SECRET.") {
     super(message, "AUTH_ERROR", 401);

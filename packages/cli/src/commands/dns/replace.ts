@@ -20,7 +20,7 @@ export const replaceRecordsCommand = buildCommand({
     if (flags["dry-run"]) { console.log(`[dry-run] would replace all records on ${domain} with ${records.length} record(s)`); return; }
     if (!flags.yes) { console.error("Refusing to replace all records without --yes. Re-run with --yes to confirm."); process.exit(2); }
     try {
-      const client = new GoDaddyClient(resolveConfigOrExit());
+      const client = new GoDaddyClient(await resolveConfigOrExit());
       await client.replaceRecords(domain, records);
       console.log(`Replaced all records on ${domain} with ${records.length} record(s)`);
     } catch (err) { handleError(err); }

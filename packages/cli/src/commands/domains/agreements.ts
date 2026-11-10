@@ -20,7 +20,7 @@ export const getAgreementsCommand = buildCommand({
   },
   async func(this: void, flags: GetAgreementsFlags) {
     try {
-      const client = new GoDaddyClient(resolveConfigOrExit());
+      const client = new GoDaddyClient(await resolveConfigOrExit());
       const result = await client.getAgreements(flags.tlds.split(","), { privacy: flags.privacy });
       console.log(formatOutput(result, flags));
     } catch (err) { handleError(err); }

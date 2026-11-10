@@ -41,7 +41,23 @@ GoDaddy authenticates with an API **key + secret** sent in a single header:
 Authorization: sso-key {GODADDY_API_KEY}:{GODADDY_API_SECRET}
 ```
 
-`resolveConfig(overrides)` reads env (and `.env`) and returns a validated config:
+`loadConfig(options)` reads process env, nearest `.env`, OS keychain, user config,
+and defaults, in that order; explicit SDK overrides win. `resolveConfig(overrides,
+options)` remains synchronous and never reads the keychain. The OS service is
+`godaddy-toolkit`, with one entry named exactly `GODADDY_API_KEY` or
+`GODADDY_API_SECRET`. Only missing credentials are read, in parallel. Lookup is
+Bun-only; Node consumers skip it. `GODADDY_KEYCHAIN=0|false|no|off` disables it
+from env or `.env`; failures become `keychain.status: unavailable` metadata.
+
+User JSON config defaults to `~/.config/godaddy-toolkit/config.json`, supports
+`XDG_CONFIG_HOME`, and can be overridden with `GODADDY_CONFIG_FILE`. Its fields
+are `apiKey`, `apiSecret`, `env`, `baseUrl`, `shopperId`, and `customerId`.
+Resolved config includes `credentialSources` (`env`, `envfile:<path>`, `keychain`,
+`config:<path>`, or missing), `keychain`, `envFiles`, `configFile`, and `cwd`.
+Credentials are required by default; diagnostics opt into `requireCredentials: false`.
+Entrypoint shebangs, development scripts, and repository bunfig disable Bun's
+automatic dotenv loading. External source launches use `--no-env-file`, so the
+resolver can distinguish .env sources from explicit inherited env credentials.
 
 | Env var | Required | Purpose |
 |---|---|---|
@@ -156,6 +172,15 @@ Each SDK method has a corresponding CLI command (grouped: `domains/`, `dns/`,
 
 ## CLI Conventions
 
+Credential management uses `auth set godaddy [--key NAME] [--stdin] [--dry-run]`,
+`auth list`, `auth delete godaddy [--key NAME] --yes [--dry-run]`, and
+`auth migrate [--dry-run] [--overwrite]`. Set uses a hidden TTY prompt or explicit
+stdin (multi-key stdin requires --key); values never enter argv or output.
+List reports presence and active source. Migration copies active .env/config
+credentials, skips existing entries unless overwritten, ignores process env,
+and reports `clean_up` without editing files. Config show redacts credentials.
+CLI API commands call async loadConfig for every operation.
+
 Inherits the shared agent-native design:
 - Non-interactive by default; `--yes`/`--force` for destructive ops.
 - Output: `--toon` (default), `--json`, `--csv` via shared `outputFlags`/`formatOutput`.
@@ -165,6 +190,11 @@ Inherits the shared agent-native design:
 - `agent-context --json` introspection.
 
 ## MCP Conventions
+
+Each tool call resolves credentials with async loadConfig so rotation applies
+without restarting. `get_config_status` reports configured state, sources, and
+keychain status without a GoDaddy request. MCP exposes no credential write/delete
+tools. Recommended host configuration uses Bun source execution with no env block.
 
 FastMCP stdio server. Tool groups registered per resource
 (`registerDomainTools`, `registerDnsTools`, `registerCertificateTools`,

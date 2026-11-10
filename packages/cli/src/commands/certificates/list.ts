@@ -18,7 +18,7 @@ export const listCertificatesCommand = buildCommand({
   },
   async func(this: void, flags: ListCertificatesFlags) {
     try {
-      const client = new GoDaddyClient(resolveConfigOrExit());
+      const client = new GoDaddyClient(await resolveConfigOrExit());
       console.log(formatOutput(await client.listCertificates({ limit: flags.limit }), flags));
     } catch (err) { handleError(err); }
   },

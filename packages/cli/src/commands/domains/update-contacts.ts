@@ -18,7 +18,7 @@ export const updateDomainContactsCommand = buildCommand({
     const contacts = JSON.parse(flags.contacts) as Record<string, DomainContact>;
     if (flags["dry-run"]) { console.log(`[dry-run] would update contacts on ${domain}`); return; }
     try {
-      const client = new GoDaddyClient(resolveConfigOrExit());
+      const client = new GoDaddyClient(await resolveConfigOrExit());
       await client.updateDomainContacts(domain, contacts);
       console.log(`Updated contacts on ${domain}`);
     } catch (err) { handleError(err); }

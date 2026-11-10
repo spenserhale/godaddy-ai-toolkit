@@ -22,7 +22,7 @@ export const getRecordsCommand = buildCommand({
   },
   async func(this: void, flags: GetRecordsFlags, domain: string) {
     try {
-      const client = new GoDaddyClient(resolveConfigOrExit());
+      const client = new GoDaddyClient(await resolveConfigOrExit());
       const result = await client.getRecords(domain, flags.type as DnsRecordType | undefined, flags.name);
       console.log(formatOutput(result, flags));
     } catch (err) { handleError(err); }

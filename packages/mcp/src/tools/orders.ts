@@ -8,7 +8,7 @@ export function registerOrderTools(server: FastMCP): void {
     description: "List billing orders for the account (v1).",
     parameters: z.object({ limit: z.number().int().optional() }),
     annotations: { readOnlyHint: true },
-    execute: async (args) => toonText(await makeClient().listOrders({ limit: args.limit })),
+    execute: async (args) => toonText(await (await makeClient()).listOrders({ limit: args.limit })),
   });
 
   server.addTool({
@@ -16,6 +16,6 @@ export function registerOrderTools(server: FastMCP): void {
     description: "Get details for a single order by id (v1).",
     parameters: z.object({ orderId: z.string() }),
     annotations: { readOnlyHint: true },
-    execute: async (args) => toonText(await makeClient().getOrder(args.orderId)),
+    execute: async (args) => toonText(await (await makeClient()).getOrder(args.orderId)),
   });
 }

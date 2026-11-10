@@ -20,7 +20,7 @@ export const listDomainsCommand = buildCommand({
   },
   async func(this: void, flags: ListDomainsFlags) {
     try {
-      const client = new GoDaddyClient(resolveConfigOrExit());
+      const client = new GoDaddyClient(await resolveConfigOrExit());
       const result = await client.listDomains({
         statuses: flags.status ? [flags.status] : undefined,
         limit: flags.limit,

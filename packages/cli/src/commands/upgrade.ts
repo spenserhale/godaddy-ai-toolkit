@@ -201,7 +201,7 @@ export const upgradeCommand = buildCommand({
         kind: "parsed",
         parse: String,
         optional: true,
-        brief: "Install a specific version (e.g. 0.1.1)",
+        brief: "Install a specific version (e.g. 0.2.0)",
       },
     },
   },
