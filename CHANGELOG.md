@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.1] - 2026-11-10
+
+### Changed
+
+- Published the OS keychain credential integration from main after merging PR #1.
+- Bumped SDK, CLI, MCP, command catalog, and lockfile workspace versions to 0.2.1.
+
+### Notes
+
+- Same credential behavior as 0.2.0; this release follows integration into main.
+
 ## [0.2.0] - 2026-11-09
 
 ### Added

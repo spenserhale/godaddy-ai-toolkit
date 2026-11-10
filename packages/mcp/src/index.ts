@@ -7,7 +7,7 @@ import { registerCertificateTools } from "./tools/certificates.js";
 import { registerOrderTools } from "./tools/orders.js";
 import { registerConfigTools } from "./tools/config.js";
 
-const server = new FastMCP({ name: "godaddy-toolkit", version: "0.2.0" });
+const server = new FastMCP({ name: "godaddy-toolkit", version: "0.2.1" });
 registerDomainTools(server);
 registerTransferTools(server);
 registerDnsTools(server);

@@ -26,7 +26,7 @@ curl -fsSL https://raw.githubusercontent.com/spenserhale/godaddy-ai-toolkit/main
 The script detects your OS + architecture, downloads the matching binary from
 the [latest release](https://github.com/spenserhale/godaddy-ai-toolkit/releases/latest),
 verifies its SHA256, and installs to `$HOME/.local/bin/godaddy`. Pin a specific
-version with `GODADDY_TOOLKIT_VERSION=v0.2.0` or change the install directory
+version with `GODADDY_TOOLKIT_VERSION=v0.2.1` or change the install directory
 with `GODADDY_TOOLKIT_INSTALL=$HOME/bin`.
 
 **Windows:** grab `godaddy-windows-x64.exe` from the
