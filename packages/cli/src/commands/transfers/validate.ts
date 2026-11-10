@@ -19,7 +19,7 @@ export const validateTransferCommand = buildCommand({
     const body = JSON.parse(flags.body) as TransferInBody;
     if (flags["dry-run"]) { console.log(`[dry-run] would validate transfer-in for ${domain}`); return; }
     try {
-      const client = new GoDaddyClient(resolveConfigOrExit());
+      const client = new GoDaddyClient(await resolveConfigOrExit());
       await client.validateTransferIn(domain, body, flags["customer-id"]);
       console.log(`Validated transfer-in for ${domain}`);
     } catch (err) { handleError(err); }

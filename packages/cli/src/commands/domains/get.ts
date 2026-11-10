@@ -12,7 +12,7 @@ export const getDomainCommand = buildCommand({
   },
   async func(this: void, flags: OutputFlags, domain: string) {
     try {
-      const client = new GoDaddyClient(resolveConfigOrExit());
+      const client = new GoDaddyClient(await resolveConfigOrExit());
       console.log(formatOutput(await client.getDomain(domain), flags));
     } catch (err) { handleError(err); }
   },

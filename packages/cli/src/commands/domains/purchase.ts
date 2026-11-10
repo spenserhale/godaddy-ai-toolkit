@@ -17,7 +17,7 @@ export const purchaseDomainCommand = buildCommand({
     const body = JSON.parse(flags.body) as DomainPurchase;
     if (flags["dry-run"]) { console.log(`[dry-run] would purchase domain ${String(body["domain"] ?? "")}`); return; }
     try {
-      const client = new GoDaddyClient(resolveConfigOrExit());
+      const client = new GoDaddyClient(await resolveConfigOrExit());
       console.log(JSON.stringify(await client.purchaseDomain(body), null, 2));
     } catch (err) { handleError(err); }
   },

@@ -26,7 +26,7 @@ export function registerDnsTools(server: FastMCP): void {
     }),
     annotations: { readOnlyHint: true },
     execute: async (args) =>
-      toonText(await makeClient().getRecords(args.domain, args.type as DnsRecordType | undefined, args.name)),
+      toonText(await (await makeClient()).getRecords(args.domain, args.type as DnsRecordType | undefined, args.name)),
   });
 
   server.addTool({
@@ -35,7 +35,7 @@ export function registerDnsTools(server: FastMCP): void {
     parameters: z.object({ domain: z.string(), records: recordArray }),
     annotations: { readOnlyHint: false },
     execute: async (args) => {
-      await makeClient().addRecords(args.domain, args.records as DnsRecord[]);
+      await (await makeClient()).addRecords(args.domain, args.records as DnsRecord[]);
       return toonText({ added: args.records.length, domain: args.domain });
     },
   });
@@ -46,7 +46,7 @@ export function registerDnsTools(server: FastMCP): void {
     parameters: z.object({ domain: z.string(), records: recordArray }),
     annotations: { readOnlyHint: false, destructiveHint: true },
     execute: async (args) => {
-      await makeClient().replaceRecords(args.domain, args.records as DnsRecord[]);
+      await (await makeClient()).replaceRecords(args.domain, args.records as DnsRecord[]);
       return toonText({ replaced: args.records.length, domain: args.domain });
     },
   });
@@ -62,7 +62,7 @@ export function registerDnsTools(server: FastMCP): void {
     }),
     annotations: { readOnlyHint: false, destructiveHint: true },
     execute: async (args) => {
-      await makeClient().replaceRecordsByType(args.domain, args.type as DnsRecordType, args.records as DnsRecord[], args.name);
+      await (await makeClient()).replaceRecordsByType(args.domain, args.type as DnsRecordType, args.records as DnsRecord[], args.name);
       return toonText({ replaced: args.records.length, domain: args.domain, type: args.type });
     },
   });
@@ -77,7 +77,7 @@ export function registerDnsTools(server: FastMCP): void {
     }),
     annotations: { readOnlyHint: false, destructiveHint: true },
     execute: async (args) => {
-      await makeClient().deleteRecord(args.domain, args.type as DnsRecordType, args.name);
+      await (await makeClient()).deleteRecord(args.domain, args.type as DnsRecordType, args.name);
       return toonText({ deleted: args.domain, type: args.type, name: args.name });
     },
   });

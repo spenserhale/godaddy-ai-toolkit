@@ -18,7 +18,7 @@ export const addRecordsCommand = buildCommand({
     const records = JSON.parse(flags.records) as DnsRecord[];
     if (flags["dry-run"]) { console.log(`[dry-run] would add ${records.length} record(s) to ${domain}`); return; }
     try {
-      const client = new GoDaddyClient(resolveConfigOrExit());
+      const client = new GoDaddyClient(await resolveConfigOrExit());
       await client.addRecords(domain, records);
       console.log(`Added ${records.length} record(s) to ${domain}`);
     } catch (err) { handleError(err); }

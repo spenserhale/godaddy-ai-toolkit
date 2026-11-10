@@ -18,7 +18,7 @@ export const transferOutCommand = buildCommand({
     if (flags["dry-run"]) { console.log(`[dry-run] would start transfer-out for ${domain}`); return; }
     if (!flags.yes) { console.error("Refusing to start transfer-out without --yes. Re-run with --yes to confirm."); process.exit(2); }
     try {
-      const client = new GoDaddyClient(resolveConfigOrExit());
+      const client = new GoDaddyClient(await resolveConfigOrExit());
       await client.transferOutDomain(domain, flags["customer-id"]);
       console.log(`Started transfer-out for ${domain}`);
     } catch (err) { handleError(err); }

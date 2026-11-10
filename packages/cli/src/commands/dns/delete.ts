@@ -22,7 +22,7 @@ export const deleteRecordCommand = buildCommand({
     if (flags["dry-run"]) { console.log(`[dry-run] would delete ${type} record ${name} on ${domain}`); return; }
     if (!flags.yes) { console.error("Refusing to delete records without --yes. Re-run with --yes to confirm."); process.exit(2); }
     try {
-      const client = new GoDaddyClient(resolveConfigOrExit());
+      const client = new GoDaddyClient(await resolveConfigOrExit());
       await client.deleteRecord(domain, type as DnsRecordType, name);
       console.log(`Deleted ${type} record ${name} on ${domain}`);
     } catch (err) { handleError(err); }

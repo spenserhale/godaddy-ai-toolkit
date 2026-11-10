@@ -1,7 +1,10 @@
 export { GoDaddyClient } from "./client.js";
-export { resolveConfig } from "./config.js";
+export { resolveConfig, loadConfig } from "./config.js";
+export type { ResolvedConfig, ResolveConfigOptions, LoadConfigOptions, Env } from "./config.js";
+export { KEYCHAIN_SERVICE, CREDENTIAL_KEYS, CREDENTIAL_RESOURCES, credentialKeys, resourceForCredentialKey, bunSecretStore, readKeychainValues, hasBunSecrets } from "./secrets.js";
+export type { SecretStore, ResourceId, KeychainState, KeychainStatus, KeychainReadResult } from "./secrets.js";
 export {
-  GoDaddyError, GoDaddyAuthError, GoDaddyNotFoundError, GoDaddyValidationError, GoDaddyRateLimitError,
+  GoDaddyError, GoDaddyAuthError, GoDaddyNotFoundError, GoDaddyValidationError, GoDaddyRateLimitError, GoDaddyConfigError,
 } from "./errors.js";
 export type {
   GoDaddyConfig, GoDaddyErrorResponse,

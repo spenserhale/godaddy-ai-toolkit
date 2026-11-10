@@ -1,0 +1,2 @@
+# The SDK owns .env discovery and provenance. Avoid promoting .env values to env.
+env = false

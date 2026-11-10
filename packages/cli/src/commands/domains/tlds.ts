@@ -11,7 +11,7 @@ export const listTldsCommand = buildCommand({
   },
   async func(this: void, flags: OutputFlags) {
     try {
-      const client = new GoDaddyClient(resolveConfigOrExit());
+      const client = new GoDaddyClient(await resolveConfigOrExit());
       console.log(formatOutput(await client.listTlds(), flags));
     } catch (err) { handleError(err); }
   },

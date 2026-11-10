@@ -22,7 +22,7 @@ export const renewDomainCommand = buildCommand({
     if (flags["dry-run"]) { console.log(`[dry-run] would renew domain ${domain}`); return; }
     if (!flags.yes) { console.error("Refusing to renew without --yes. Re-run with --yes to confirm."); process.exit(2); }
     try {
-      const client = new GoDaddyClient(resolveConfigOrExit());
+      const client = new GoDaddyClient(await resolveConfigOrExit());
       console.log(JSON.stringify(await client.renewDomain(domain, { period: flags.period }), null, 2));
     } catch (err) { handleError(err); }
   },

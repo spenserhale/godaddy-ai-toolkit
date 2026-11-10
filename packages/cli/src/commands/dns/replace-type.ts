@@ -24,7 +24,7 @@ export const replaceRecordsByTypeCommand = buildCommand({
     if (flags["dry-run"]) { console.log(`[dry-run] would replace ${type} record(s) on ${domain} with ${records.length} record(s)`); return; }
     if (!flags.yes) { console.error("Refusing to replace records without --yes. Re-run with --yes to confirm."); process.exit(2); }
     try {
-      const client = new GoDaddyClient(resolveConfigOrExit());
+      const client = new GoDaddyClient(await resolveConfigOrExit());
       await client.replaceRecordsByType(domain, type as DnsRecordType, records, flags.name);
       console.log(`Replaced ${type} record(s) on ${domain} with ${records.length} record(s)`);
     } catch (err) { handleError(err); }

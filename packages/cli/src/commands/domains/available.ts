@@ -19,7 +19,7 @@ export const availableDomainCommand = buildCommand({
   },
   async func(this: void, flags: AvailableDomainFlags, domain: string) {
     try {
-      const client = new GoDaddyClient(resolveConfigOrExit());
+      const client = new GoDaddyClient(await resolveConfigOrExit());
       const result = await client.checkAvailability(domain, { forTransfer: flags["for-transfer"] });
       console.log(formatOutput(result, flags));
     } catch (err) { handleError(err); }

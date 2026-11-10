@@ -17,7 +17,7 @@ export const retryTransferInCommand = buildCommand({
   async func(this: void, flags: RetryTransferInFlags, domain: string) {
     if (flags["dry-run"]) { console.log(`[dry-run] would retry transfer-in for ${domain}`); return; }
     try {
-      const client = new GoDaddyClient(resolveConfigOrExit());
+      const client = new GoDaddyClient(await resolveConfigOrExit());
       await client.retryTransferIn(domain, { authCode: flags["auth-code"] }, flags["customer-id"]);
       console.log(`Retried transfer-in for ${domain}`);
     } catch (err) { handleError(err); }

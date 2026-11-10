@@ -1,7 +1,7 @@
 ---
 title: OS keychain credentials
 description: Shared Bun.secrets credential resolution and CLI management.
-status: in-progress
+status: done
 date: 2026-11-09
 size: large
 ---
@@ -48,6 +48,10 @@ Configuration/security guides, root and package READMEs, design spec, .env.examp
 - [configuration] use ~/.config/godaddy-toolkit/config.json (XDG_CONFIG_HOME supported), with apiKey/apiSecret JSON fields — cost if wrong: medium, users would migrate paths.
 - [docs] preserve existing docs/ads spec and plan directories; create docs/decisions and docs/guides — cost if wrong: low, files move.
 - [workspace] use a feature branch in the provided workspace — cost if wrong: low, no concurrent checkout writes exist.
+- [runtime] disable Bun automatic dotenv loading in entrypoint shebangs, dev scripts, repository bunfig, and documented source launches — Bun otherwise erases credential provenance before resolver startup — cost if wrong: medium, migration may skip file credentials in custom launchers that omit the flag.
+- [dotenv] read only the nearest .env file, rather than merging ancestor files — follows the requested nearest-file precedence — cost if wrong: low, inherited parent values require explicit env injection.
+- [lockfile] corrected three stale workspace version fields after Bun preserved 0.1.0 through both normal and forced lockfile installs — cost if wrong: low, frozen-lockfile verification passes.
+- [commits] ship SDK, CLI, MCP, tests, docs, and version changes as one integrated feature commit after the plan commit — credential resolution is a shared public contract — cost if wrong: low, individual changes remain reviewable by path.
 
 ## Tasks
 
@@ -98,4 +102,14 @@ Configuration/security guides, root and package READMEs, design spec, .env.examp
 
 ## Deferred
 
-None planned. Real-keychain manual checks must first inspect existing entries and preserve them.
+No feature work deferred. Compiled/bundled routing remains the existing unsupported path; use Bun source execution.
+
+## Verification results
+
+- `bun test`: 74 passed, 0 failed, 206 assertions across 7 files.
+- `bun run lint`: all three packages passed.
+- `bun install` and `bun install --frozen-lockfile`: passed; workspace versions now 0.2.0.
+- Independent final review: approved with no actionable findings after the dotenv provenance regression was fixed.
+- Manual macOS: auth list first confirmed both entries absent. Stored dummy key and secret via stdin; auth list showed keychain source, config show was redacted with status ok, security metadata lookup found both entries, and a real MCP stdio get_config_status call reported configured without env credentials. Deleted only those dummy entries; final list confirmed both missing.
+- Pseudo-TTY hidden prompt dry run: accepted input, exited 0, and never echoed the typed value. Unit tests additionally cover cancellation, pasted chunks, editing, and terminal restoration.
+- Automated tests used injected stores or disabled lookup and never accessed the real keychain. No generated skill exists in this repository.

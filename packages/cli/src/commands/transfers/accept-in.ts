@@ -18,7 +18,7 @@ export const acceptTransferInCommand = buildCommand({
     if (flags["dry-run"]) { console.log(`[dry-run] would accept transfer-in for ${domain}`); return; }
     if (!flags.yes) { console.error("Refusing to accept transfer-in without --yes. Re-run with --yes to confirm."); process.exit(2); }
     try {
-      const client = new GoDaddyClient(resolveConfigOrExit());
+      const client = new GoDaddyClient(await resolveConfigOrExit());
       await client.acceptTransferIn(domain, flags["customer-id"]);
       console.log(`Accepted transfer-in for ${domain}`);
     } catch (err) { handleError(err); }

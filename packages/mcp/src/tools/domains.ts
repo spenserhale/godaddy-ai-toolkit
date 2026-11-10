@@ -12,7 +12,7 @@ export function registerDomainTools(server: FastMCP): void {
     }),
     annotations: { readOnlyHint: true },
     execute: async (args) => {
-      const client = makeClient();
+      const client = await makeClient();
       return toonText(await client.listDomains({ statuses: args.status ? [args.status] : undefined, limit: args.limit }));
     },
   });
@@ -22,7 +22,7 @@ export function registerDomainTools(server: FastMCP): void {
     description: "Get details for a single domain (v1).",
     parameters: z.object({ domain: z.string() }),
     annotations: { readOnlyHint: true },
-    execute: async (args) => toonText(await makeClient().getDomain(args.domain)),
+    execute: async (args) => toonText(await (await makeClient()).getDomain(args.domain)),
   });
 
   server.addTool({
@@ -30,7 +30,7 @@ export function registerDomainTools(server: FastMCP): void {
     description: "Check if a domain is available to register (v1).",
     parameters: z.object({ domain: z.string(), forTransfer: z.boolean().optional() }),
     annotations: { readOnlyHint: true },
-    execute: async (args) => toonText(await makeClient().checkAvailability(args.domain, { forTransfer: args.forTransfer })),
+    execute: async (args) => toonText(await (await makeClient()).checkAvailability(args.domain, { forTransfer: args.forTransfer })),
   });
 
   server.addTool({
@@ -38,7 +38,7 @@ export function registerDomainTools(server: FastMCP): void {
     description: "Suggest available domain names for a query (v1).",
     parameters: z.object({ query: z.string(), limit: z.number().int().optional() }),
     annotations: { readOnlyHint: true },
-    execute: async (args) => toonText(await makeClient().suggestDomains(args.query, { limit: args.limit })),
+    execute: async (args) => toonText(await (await makeClient()).suggestDomains(args.query, { limit: args.limit })),
   });
 
   server.addTool({
@@ -46,7 +46,7 @@ export function registerDomainTools(server: FastMCP): void {
     description: "Purchase/register a domain (v1). BILLABLE. Body must match the TLD purchase schema.",
     parameters: z.object({ body: z.record(z.unknown()).describe("Purchase payload") }),
     annotations: { readOnlyHint: false, destructiveHint: true },
-    execute: async (args) => toonText(await makeClient().purchaseDomain(args.body)),
+    execute: async (args) => toonText(await (await makeClient()).purchaseDomain(args.body)),
   });
 
   server.addTool({
@@ -54,6 +54,6 @@ export function registerDomainTools(server: FastMCP): void {
     description: "Cancel (delete) a domain (v1). IRREVERSIBLE.",
     parameters: z.object({ domain: z.string() }),
     annotations: { readOnlyHint: false, destructiveHint: true },
-    execute: async (args) => { await makeClient().cancelDomain(args.domain); return toonText({ canceled: args.domain }); },
+    execute: async (args) => { await (await makeClient()).cancelDomain(args.domain); return toonText({ canceled: args.domain }); },
   });
 }

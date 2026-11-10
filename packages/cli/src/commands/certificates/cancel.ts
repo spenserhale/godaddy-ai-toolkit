@@ -17,7 +17,7 @@ export const cancelCertificateCommand = buildCommand({
     if (flags["dry-run"]) { console.log(`[dry-run] would cancel certificate ${certificateId}`); return; }
     if (!flags.yes) { console.error("Refusing to cancel without --yes. Re-run with --yes to confirm."); process.exit(2); }
     try {
-      const client = new GoDaddyClient(resolveConfigOrExit());
+      const client = new GoDaddyClient(await resolveConfigOrExit());
       await client.cancelCertificate(certificateId);
       console.log(`Canceled certificate ${certificateId}`);
     } catch (err) { handleError(err); }
